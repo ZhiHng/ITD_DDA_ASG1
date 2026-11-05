@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 4 November 2026
+* Date: 5 November 2026
 * Description: CRUD operations for user data in Firebase Realtime Database
 */
 
@@ -18,7 +18,7 @@ public class FirebaseGameDatabase : MonoBehaviour
     public string currentUserId;
     void Start()
     {
-        databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+        databaseReference = FirebaseDatabase.GetInstance("https://speedy-sushi-ar-default-rtdb.asia-southeast1.firebasedatabase.app").RootReference;
         print("User data written to Firebase Realtime Database.");
         FirebaseDatabase.DefaultInstance.GetReference("users").ValueChanged += HandleUsernameChanged;
     }
@@ -55,6 +55,7 @@ public class FirebaseGameDatabase : MonoBehaviour
                     string experience = snapshot.Child("experience").Value.ToString();
                     Debug.Log($"User ID: {currentUserId}, Username: {username}, Level: {level}, Experience: {experience}");
                     GameManager.instance.userId = currentUserId;
+                    GameManager.instance.username = username;
                     GameManager.instance.level = int.Parse(level);
                     GameManager.instance.experience = int.Parse(experience);
                 }

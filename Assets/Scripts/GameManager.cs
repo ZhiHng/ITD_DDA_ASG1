@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 4 November 2026
+* Date: 5 November 2026
 * Description: Game Manager to store user data locally and manage game state
 */
 
@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public string userId;
+    public string username;
     public int level;
     public int experience;
 
