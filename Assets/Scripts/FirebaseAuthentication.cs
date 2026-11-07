@@ -38,8 +38,8 @@ public class FirebaseAuthentication : MonoBehaviour
             }
             else if (task.IsCompleted)
             {
-                Debug.Log("SignUp completed successfully. Please Sign in.");
                 gameDatabase.WriteNewUser(task.Result.User.UserId, usernameInputField.text);
+                Debug.Log("SignUp completed successfully. Please Sign in.");
             }
         });
     }
