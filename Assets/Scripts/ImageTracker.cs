@@ -1,8 +1,12 @@
-using System.Collections.Generic;
+/*
+* Author: Zhi hng
+* Date: 8 November 2026
+* Description: Script for image tracking
+*/
+
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-
 
 public class ImageTracker : MonoBehaviour
 {
@@ -10,77 +14,46 @@ public class ImageTracker : MonoBehaviour
     private ARTrackedImageManager trackedImageManager;
 
     [SerializeField]
-    private GameObject[] placeablePrefabs;
+    private GameObject arenaPrefab;
 
-    private Dictionary<string, GameObject> spawnedPrefabs = new Dictionary<string, GameObject>();
+    public static GameObject ArenaInstance;
 
-    private Dictionary<GameObject, GameObject> spawnedObjects = new Dictionary<GameObject, GameObject>();
+    private bool arenaSpawned = false;
 
-    private string[] someArray = new string[]{"Image1", "Image2", "Image3"};
-
-    private void Start()
+    private void OnEnable()
     {
-        if (trackedImageManager != null)
+        trackedImageManager.trackablesChanged.AddListener(OnImageChanged);
+    }
+
+    private void OnDisable()
+    {
+        trackedImageManager.trackablesChanged.RemoveListener(OnImageChanged);
+    }
+
+    private void OnImageChanged(ARTrackablesChangedEventArgs<ARTrackedImage> args)
+    {
+        foreach(var trackedImage in args.added)
         {
-            trackedImageManager.trackablesChanged.AddListener(OnImageChanged);
-            SetupPrefabs();
+            TrySpawnArena(trackedImage);
         }
     }
 
-    void SetupPrefabs()
+    private void TrySpawnArena(ARTrackedImage trackedImage)
     {
-        foreach (GameObject prefab in placeablePrefabs)
-        {
-            GameObject newPrefab = Instantiate(prefab);
-            newPrefab.name = prefab.name;
-            newPrefab.SetActive(false);
-            spawnedPrefabs.Add(prefab.name, newPrefab);
-            spawnedObjects.Add(newPrefab, prefab);
-        }
-    }
+        if(arenaSpawned)
+            return;
 
-    void OnImageChanged(ARTrackablesChangedEventArgs<ARTrackedImage> eventArgs)
-    {
-        foreach (ARTrackedImage trackedImage in eventArgs.added)
-        {
-            UpdateImage(trackedImage);
-        }
+        if(trackedImage.trackingState != TrackingState.Tracking)
+            return;
 
-        foreach (ARTrackedImage trackedImage in eventArgs.updated)
-        {
-            UpdateImage(trackedImage);
-        }
+        ArenaInstance = Instantiate(
+            arenaPrefab,
+            trackedImage.transform.position,
+            trackedImage.transform.rotation
+        );
 
-        foreach (KeyValuePair<TrackableId, ARTrackedImage> lostObj in eventArgs.removed)
-        {
-            UpdateImage(lostObj.Value);
-        }
-    }
+        arenaSpawned = true;
 
-    void UpdateImage(ARTrackedImage trackedImage)
-    {
-        if(trackedImage != null)
-        {
-            if (trackedImage.trackingState == TrackingState.Limited || trackedImage.trackingState == TrackingState.None)
-            {
-                //Disable the associated content
-                spawnedPrefabs[trackedImage.referenceImage.name].transform.SetParent(null);
-                spawnedPrefabs[trackedImage.referenceImage.name].SetActive(false);
-            }
-            else if (trackedImage.trackingState == TrackingState.Tracking)
-            {
-                Debug.Log(trackedImage.gameObject.name + " is being tracked.");
-                //Enable the associated content
-                if(spawnedPrefabs[trackedImage.referenceImage.name].transform.parent != trackedImage.transform)
-                {
-                    Debug.Log("Enabling associated content: " + spawnedPrefabs[trackedImage.referenceImage.name].name);
-                    spawnedPrefabs[trackedImage.referenceImage.name].transform.SetParent(trackedImage.transform);
-                    spawnedPrefabs[trackedImage.referenceImage.name].transform.localPosition = spawnedObjects[spawnedPrefabs[trackedImage.referenceImage.name]].transform.localPosition;
-                    spawnedPrefabs[trackedImage.referenceImage.name].transform.localRotation = spawnedObjects[spawnedPrefabs[trackedImage.referenceImage.name]].transform.localRotation;
-
-                    spawnedPrefabs[trackedImage.referenceImage.name].SetActive(true);
-                }
-            }
-        }
+        Debug.Log("Arena spawned");
     }
 }

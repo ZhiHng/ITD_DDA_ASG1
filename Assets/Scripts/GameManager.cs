@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 7 November 2026
+* Date: 10 November 2026
 * Description: Game Manager to store user data locally and manage game state
 */
 
@@ -31,15 +31,5 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         maxSpawnedUnits += level;
-
-        //Spawn NPC
-        Card card = CardManager.instance.GetCardDetails("I1");
-
-        GameObject prefab = CardManager.instance.GetPrefab(card.id);
-
-        GameObject unit = Instantiate(prefab);
-        unit.GetComponent<NPCUnits>().card = card;
     }
-
-    
 }

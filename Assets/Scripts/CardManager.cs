@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 7 November 2026
+* Date: 10 November 2026
 * Description: Data for the stats of the cards that will be scanned with AR
 */
 
@@ -105,16 +105,29 @@ public class CardManager : MonoBehaviour
         switch(card.effect)
         {
             case EffectType.GiveMoney:
-                GameManager.instance.money += card.effectValue;
+                GameManager.instance.money += (int)card.effectValue;
                 break;
 
             case EffectType.Heal:
-                card.health += card.effectValue;
+                card.health += (int)card.effectValue;
                 break;
             case EffectType.AttackSpeedBoost:
-                // Implement attack speed boost logic here
+                card.attackCooldown = Mathf.Max(0.1f, card.attackCooldown - card.effectValue);
                 break;
         }
+    }
+
+    public void SpawnUnit(string cardId, Vector3 spawnPosition, bool isAlly)
+    {
+        Card card = GetCardDetails(cardId);
+
+        GameObject prefab = GetPrefab(cardId);
+
+        GameObject unitObject = Instantiate(prefab, spawnPosition, Quaternion.identity, ImageTracker.ArenaInstance.transform);
+
+        NPCUnits npc = unitObject.GetComponent<NPCUnits>();
+
+        npc.Initialize(card, isAlly);
     }
 }
 
@@ -128,6 +141,7 @@ public class Card
     public int damage;
     public int health;
     public int range;
+    public float attackCooldown;
 
     public bool areaDamage;
     public int cost;
@@ -136,7 +150,8 @@ public class Card
     public List<string> mergedWith;
 
     public EffectType effect;
-    public int effectValue;
+    public float effectValue;
+    public Color projectileColor;
 
     public Card Clone()
     {
@@ -149,9 +164,14 @@ public class Card
             damage = damage,
             health = health,
             range = range,
+            attackCooldown = attackCooldown,
 
             areaDamage = areaDamage,
             cost = cost,
+
+            effect = effect,
+            effectValue = effectValue,
+            projectileColor = projectileColor,
 
             mergeable = new List<string>(mergeable),
             mergedWith = new List<string>(mergedWith)
@@ -180,12 +200,14 @@ public class CardDatabase
                 damage = 1,
                 health = 10,
                 range = 1,
+                attackCooldown = 1f,
                 areaDamage = false,
                 cost = 20,
                 mergeable = new List<string>() {},
                 mergedWith = new List<string>() {},
                 effect = EffectType.None,
-                effectValue = 0
+                effectValue = 0,
+                projectileColor = Color.white
             }
         },
         {
@@ -197,12 +219,14 @@ public class CardDatabase
                 damage = 1,
                 health = 5,
                 range = 3,
+                attackCooldown = 1f,
                 areaDamage = false,
                 cost = 20,
                 mergeable = new List<string>() {},
                 mergedWith = new List<string>() {},
                 effect = EffectType.None,
-                effectValue = 0
+                effectValue = 0,
+                projectileColor = Color.darkGreen
             }
         },
         {
@@ -214,12 +238,14 @@ public class CardDatabase
                 damage = 3,
                 health = 10,
                 range = 1,
+                attackCooldown = 1f,
                 areaDamage = true,
                 cost = 30,
                 mergeable = new List<string>() {"B1"},
                 mergedWith = new List<string>() {},
                 effect = EffectType.Heal,
-                effectValue = 5
+                effectValue = 5,
+                projectileColor = Color.orange
             }
         },
         {
@@ -231,12 +257,14 @@ public class CardDatabase
                 damage = 4,
                 health = 4,
                 range = 3,
+                attackCooldown = 1f,
                 areaDamage = false,
                 cost = 30,
                 mergeable = new List<string>() {"B1",},
                 mergedWith = new List<string>() {},
                 effect = EffectType.AttackSpeedBoost,
-                effectValue = 2
+                effectValue = 0.5f,
+                projectileColor = Color.red
             }
         },
         {
@@ -248,12 +276,14 @@ public class CardDatabase
                 damage = 2,
                 health = 15,
                 range = 1,
+                attackCooldown = 1f,
                 areaDamage = true,
                 cost = 25,
                 mergeable = new List<string>() { "B1", "B2" },
                 mergedWith = new List<string>() {},
                 effect = EffectType.GiveMoney,
-                effectValue = 10
+                effectValue = 10,
+                projectileColor = Color.yellow
             }
         },
         {
@@ -265,12 +295,14 @@ public class CardDatabase
                 damage = 5,
                 health = 1,
                 range = 0,
+                attackCooldown = 1f,
                 areaDamage = false,
                 cost = 10,
                 mergeable = new List<string>() {"U"},
                 mergedWith = new List<string>() {},
                 effect = EffectType.None,
-                effectValue = 0
+                effectValue = 0,
+                projectileColor = Color.green
             }
         },
         {
@@ -282,12 +314,14 @@ public class CardDatabase
                 damage = 0,
                 health = 5,
                 range = 1,
+                attackCooldown = 1f,
                 areaDamage = true,
                 cost = 15,
                 mergeable = new List<string>() {"U"},
                 mergedWith = new List<string>() {},
                 effect = EffectType.None,
-                effectValue = 0
+                effectValue = 0,
+                projectileColor = Color.brown
             }
         }
     };
