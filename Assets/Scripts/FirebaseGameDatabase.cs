@@ -51,13 +51,13 @@ public class FirebaseGameDatabase : MonoBehaviour
                 if (snapshot.Exists)
                 {
                     string username = snapshot.Child("username").Value.ToString();
-                    string level = snapshot.Child("level").Value.ToString();
-                    string experience = snapshot.Child("experience").Value.ToString();
+                    int level = int.Parse(snapshot.Child("level").Value.ToString());
+                    int experience = int.Parse(snapshot.Child("experience").Value.ToString());
                     Debug.Log($"User ID: {currentUserId}, Username: {username}, Level: {level}, Experience: {experience}");
                     GameManager.instance.userId = currentUserId;
                     GameManager.instance.username = username;
-                    GameManager.instance.level = int.Parse(level);
-                    GameManager.instance.experience = int.Parse(experience);
+                    GameManager.instance.level = level;
+                    GameManager.instance.experience = experience;
                 }
                 else
                 {

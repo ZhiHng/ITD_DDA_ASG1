@@ -1401,7 +1401,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &282410264
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2381,7 +2381,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &519300030
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2930,7 +2930,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &658323347
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4949,7 +4949,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1004482412
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6387,6 +6387,8 @@ GameObject:
   - component: {fileID: 1316355873}
   - component: {fileID: 1316355872}
   - component: {fileID: 1316355875}
+  - component: {fileID: 1316355877}
+  - component: {fileID: 1316355876}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6458,6 +6460,63 @@ MonoBehaviour:
   money: 0
   spawnedUnits: 0
   maxSpawnedUnits: 3
+--- !u!114 &1316355876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316355871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 89ab2a2f1bfedb3498b9b421b3c7988e, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: 
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &1316355877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316355871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86ffdfff383f9c24d9e8f52df56824df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardManager
+  cardVisuals:
+  - cardId: B1
+    prefab: {fileID: 1238587951215162255, guid: b6ae5168667a7914f82e906802c77c8b, type: 3}
+  - cardId: B2
+    prefab: {fileID: 1396869622201468656, guid: 82d0f73163b73774dafde1eb4c74c56e, type: 3}
+  - cardId: I1
+    prefab: {fileID: 7129182046780548988, guid: 1895618424501f044a1c79cef32c5a53, type: 3}
+  - cardId: I2
+    prefab: {fileID: 3490227075726918071, guid: 08093d4dd1f6a834aa02c699b03c0be5, type: 3}
+  - cardId: I3
+    prefab: {fileID: 6397126744940699743, guid: b47cb6175b401f046b31299ed4c85c83, type: 3}
+  - cardId: S1
+    prefab: {fileID: 1638044775648015328, guid: 7572743336ae24f49b78149a0967b77d, type: 3}
+  - cardId: S2
+    prefab: {fileID: 2194781700910675490, guid: a66313ba3111f474797a770ab0aea8d8, type: 3}
 --- !u!1 &1323550131
 GameObject:
   m_ObjectHideFlags: 0
@@ -7993,7 +8052,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1648813179
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9794,7 +9853,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2083803737
 RectTransform:
   m_ObjectHideFlags: 0

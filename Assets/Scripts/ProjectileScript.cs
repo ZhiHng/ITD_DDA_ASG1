@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 10 November 2026
+* Date: 21 November 2026
 * Description: Script for the projectiles for both ally and enemy units.
 */
 
@@ -13,7 +13,7 @@ public class ProjectileScript : MonoBehaviour
     [SerializeField] GameObject[] impactEffect = new GameObject[2]; //0 for normal, 1 for area damage
     Renderer projectileRenderer;
     bool isAreaDamage;
-    int projectileDamage;
+    public int projectileDamage;
     Rigidbody rb;
     public void Initialize(Color color, bool isAreaDamage, bool isAllyProjectile, int damage)
     {
@@ -26,10 +26,12 @@ public class ProjectileScript : MonoBehaviour
         this.isAreaDamage = isAreaDamage;
         if (isAllyProjectile)
         {
+            gameObject.tag = "AllyProjectile";
             rb.excludeLayers = LayerMask.GetMask("Ally");
         }
         else
         {
+            gameObject.tag = "EnemyProjectile";
             rb.excludeLayers = LayerMask.GetMask("Enemy");
         }
         projectileDamage = damage;

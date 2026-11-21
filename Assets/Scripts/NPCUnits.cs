@@ -1,9 +1,10 @@
 /*
 * Author: Zhi hng
-* Date: 10 November 2026
+* Date: 21 November 2026
 * Description: Script for the NPC units to move, interact, and run the game mechanics.
 */
 
+using System.Collections;
 using UnityEngine;
 
 public class NPCUnits : MonoBehaviour
@@ -19,8 +20,10 @@ public class NPCUnits : MonoBehaviour
 
     GameObject targetEnemy;
     [SerializeField] GameObject deathEffect;
-    float aggroRange = 5f;
-    float moveSpeed = 2f;
+    [SerializeField] GameObject projectilePrefab;
+    bool isLoaded = true;
+    float aggroRange = 0.05f;
+    float moveSpeed = 0.02f;
     
     void Start()
     {
@@ -39,9 +42,10 @@ public class NPCUnits : MonoBehaviour
     {
         if (targetEnemy != null)
         {
-            if (Vector3.Distance(transform.position, targetEnemy.transform.position) <= card.range)
+            if (Vector3.Distance(transform.position, targetEnemy.transform.position) <= card.range / 100f) // convert range from cm to m
             {
-                AttackEnemy();
+                if (isLoaded)
+                    AttackEnemy();
             }
             else
             {
@@ -51,6 +55,12 @@ public class NPCUnits : MonoBehaviour
         else
         {
             FindClosestEnemy();
+            if (isAlly)
+                transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
+            else
+            {
+                transform.Translate(Vector3.back * moveSpeed * Time.deltaTime);
+            }
         }
     }
 
@@ -62,11 +72,11 @@ public class NPCUnits : MonoBehaviour
         }
         if (other.gameObject.CompareTag("AllyProjectile") && !isAlly)
         {
-            
+            TakeDamage(other.gameObject.GetComponent<ProjectileScript>().projectileDamage);
         }
         else if (other.gameObject.CompareTag("EnemyProjectile") && isAlly)
         {
-            
+            TakeDamage(other.gameObject.GetComponent<ProjectileScript>().projectileDamage);
         }
     }
 
@@ -111,7 +121,15 @@ public class NPCUnits : MonoBehaviour
 
     void AttackEnemy()
     {
-        
+        Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
+        transform.rotation = Quaternion.LookRotation(direction);
+
+        GameObject projectile = Instantiate(projectilePrefab, transform.position + direction, Quaternion.identity);
+        ProjectileScript projectileScript = projectile.GetComponent<ProjectileScript>();
+        projectileScript.Initialize(card.projectileColor, card.areaDamage, isAlly, card.damage);
+
+        isLoaded = false;
+        StartCoroutine(AttackCooldown());
     }
 
     public void TakeDamage(int damage)
@@ -123,5 +141,11 @@ public class NPCUnits : MonoBehaviour
             Instantiate(deathEffect, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
+    }
+
+    IEnumerator AttackCooldown()
+    {
+        yield return new WaitForSeconds(card.attackCooldown);
+        isLoaded = true;
     }
 }

@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Ally
   - Enemy
+  - AllySpawn
+  - EnemySpawn
+  - AllyProjectile
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX

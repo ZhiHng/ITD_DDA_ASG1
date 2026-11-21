@@ -8,12 +8,12 @@
 public class User
 {
     public string username;
-    public string level;
-    public string experience;
+    public int level;
+    public int experience;
 
     public User() {}
 
-    public User(string username, string level = "0", string experience = "0")
+    public User(string username, int level = 0, int experience = 0)
     {
         this.username = username;
         this.level = level;

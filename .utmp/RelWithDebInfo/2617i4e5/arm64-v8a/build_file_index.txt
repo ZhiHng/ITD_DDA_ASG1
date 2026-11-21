@@ -1,0 +1,2 @@
+C:\Users\stmcz\Desktop\Immersive Technology Development\ASG1\ITD_DDA_ASG1\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
+C:\Users\stmcz\Desktop\Immersive Technology Development\ASG1\ITD_DDA_ASG1\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt
