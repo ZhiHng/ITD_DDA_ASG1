@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 10 November 2026
+* Date: 22 November 2026
 * Description: Data for the stats of the cards that will be scanned with AR
 */
 
@@ -123,7 +123,7 @@ public class CardManager : MonoBehaviour
 
         GameObject prefab = GetPrefab(cardId);
 
-        GameObject unitObject = Instantiate(prefab, spawnPosition, Quaternion.identity, ImageTracker.ArenaInstance.transform);
+        GameObject unitObject = Instantiate(prefab, spawnPosition, Quaternion.identity);//ImageTracker.ArenaInstance.transform
 
         NPCUnits npc = unitObject.GetComponent<NPCUnits>();
 
@@ -218,7 +218,7 @@ public class CardDatabase
                 description = "Also known as nori, used to wrap sushi.",
                 damage = 1,
                 health = 5,
-                range = 3,
+                range = 8,
                 attackCooldown = 1f,
                 areaDamage = false,
                 cost = 20,
@@ -256,7 +256,7 @@ public class CardDatabase
                 description = "Another popular fish used in sushi.",
                 damage = 4,
                 health = 4,
-                range = 3,
+                range = 5,
                 attackCooldown = 1f,
                 areaDamage = false,
                 cost = 30,

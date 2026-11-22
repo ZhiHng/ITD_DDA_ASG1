@@ -1,11 +1,12 @@
 /*
 * Author: Zhi hng
-* Date: 21 November 2026
+* Date: 22 November 2026
 * Description: Script for the NPC units to move, interact, and run the game mechanics.
 */
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NPCUnits : MonoBehaviour
 {
@@ -21,21 +22,29 @@ public class NPCUnits : MonoBehaviour
     GameObject targetEnemy;
     [SerializeField] GameObject deathEffect;
     [SerializeField] GameObject projectilePrefab;
+    [SerializeField] Image healthBar;
+    [SerializeField] Transform projectileSpawnPoint;
+    [HideInInspector] public Vector3 moveDirection;
     bool isLoaded = true;
-    float aggroRange = 0.05f;
+    float aggroRange = 0.1f;
     float moveSpeed = 0.02f;
+    float maxHealth;
     
     void Start()
     {
+        maxHealth = card.health;
+        healthBar.fillAmount = 1f;
         if (isAlly)
         {
             gameObject.tag = "Ally";
-            gameObject.layer = LayerMask.NameToLayer("Ally");
+            healthBar.color = Color.green;
+            moveDirection = transform.forward; //arena.transform.forward;
         }
         else
         {
             gameObject.tag = "Enemy";
-            gameObject.layer = LayerMask.NameToLayer("Enemy");
+            healthBar.color = Color.red;
+            moveDirection = -transform.forward; //-arena.transform.forward;
         }
     }
     void Update()
@@ -55,12 +64,8 @@ public class NPCUnits : MonoBehaviour
         else
         {
             FindClosestEnemy();
-            if (isAlly)
-                transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-            else
-            {
-                transform.Translate(Vector3.back * moveSpeed * Time.deltaTime);
-            }
+            transform.position += moveDirection * moveSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.LookRotation(moveDirection);
         }
     }
 
@@ -70,19 +75,15 @@ public class NPCUnits : MonoBehaviour
         {
             FindClosestEnemy();
         }
-        if (other.gameObject.CompareTag("AllyProjectile") && !isAlly)
+        if ((other.gameObject.CompareTag("AllyProjectile") && !isAlly) || other.gameObject.CompareTag("EnemyProjectile") && isAlly)
         {
-            TakeDamage(other.gameObject.GetComponent<ProjectileScript>().projectileDamage);
-        }
-        else if (other.gameObject.CompareTag("EnemyProjectile") && isAlly)
-        {
-            TakeDamage(other.gameObject.GetComponent<ProjectileScript>().projectileDamage);
+            TakeDamage(other.gameObject.GetComponent<DamageSource>().damage);
         }
     }
 
     void FindClosestEnemy()
     {
-        Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, aggroRange);
+        Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, aggroRange + card.range / 100f);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestEnemy = null;
@@ -124,7 +125,7 @@ public class NPCUnits : MonoBehaviour
         Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
         transform.rotation = Quaternion.LookRotation(direction);
 
-        GameObject projectile = Instantiate(projectilePrefab, transform.position + direction, Quaternion.identity);
+        GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, transform.rotation);
         ProjectileScript projectileScript = projectile.GetComponent<ProjectileScript>();
         projectileScript.Initialize(card.projectileColor, card.areaDamage, isAlly, card.damage);
 
@@ -135,7 +136,7 @@ public class NPCUnits : MonoBehaviour
     public void TakeDamage(int damage)
     {
         card.health -= damage;
-
+        healthBar.fillAmount = card.health / maxHealth;
         if (card.health <= 0)
         {
             Instantiate(deathEffect, transform.position, Quaternion.identity);

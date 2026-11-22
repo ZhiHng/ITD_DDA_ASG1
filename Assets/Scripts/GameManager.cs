@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     public int maxSpawnedUnits = 3;
     Vector3 allySpawnPosition;
     Vector3 enemySpawnPosition;
-    string[] cardIds = { "B1", "B", "I1", "I2", "I3", "S1", "S2"};
+    string[] cardIds = { "B1", "B2", "I1", "I2", "I3", "S1", "S2"};
 
     void Start()
     {
@@ -40,11 +40,15 @@ public class GameManager : MonoBehaviour
 
     void OnSpawnAlly()
     {
-        CardManager.instance.SpawnUnit(cardIds[Random.Range(0, cardIds.Length)], allySpawnPosition + Vector3.right * Random.Range(-0.175f, 0.175f), true);
+        string cardId = cardIds[Random.Range(0, cardIds.Length)];
+        print("Spawning ally unit, cardId: " + cardId);
+        CardManager.instance.SpawnUnit(cardId, allySpawnPosition + Vector3.right * Random.Range(-0.175f, 0.175f) + Vector3.up * 0.01f, true);
     }
 
     void OnSpawnEnemy()
     {
-        CardManager.instance.SpawnUnit(cardIds[Random.Range(0, cardIds.Length)], enemySpawnPosition + Vector3.right * Random.Range(-0.175f, 0.175f), false);
+        string cardId = cardIds[Random.Range(0, cardIds.Length)];
+        print("Spawning enemy unit, cardId: " + cardId);
+        CardManager.instance.SpawnUnit(cardId, enemySpawnPosition + Vector3.right * Random.Range(-0.175f, 0.175f) + Vector3.up * 0.01f, false);
     }
 }
