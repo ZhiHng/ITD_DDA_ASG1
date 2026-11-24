@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 22 November 2026
+* Date: 24 November 2026
 * Description: Script for the projectiles for both ally and enemy units.
 */
 
@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class ProjectileScript : MonoBehaviour
 {
-    float speed = 0.1f;
+    float speed = 0.15f;
     float lifetime = 1f;
     [SerializeField] GameObject[] impactEffect = new GameObject[2]; //0 for normal, 1 for area damage
     Renderer projectileRenderer;

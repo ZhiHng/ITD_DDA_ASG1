@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 22 November 2026
+* Date: 24 November 2026
 * Description: Data for the stats of the cards that will be scanned with AR
 */
 
@@ -23,45 +23,68 @@ public class CardManager : MonoBehaviour
         }
     }
 
-    public List<CardVisual> cardVisuals;
+    public List<CardPrefab> cardPrefabs;
     public Card GetCardDetails(string id)
     {
         if (CardDatabase.cards.TryGetValue(id, out Card card))
         {
-            // Return a NEW card instead of modifying database card
-            return card.Clone();
+            Card clonedCard = card.Clone();
+            clonedCard.id = id;
+
+            return clonedCard;
         }
 
         Debug.LogError("Card with ID " + id + " not found.");
         return null;
     }
 
-    public GameObject GetPrefab(string cardId)
+    public GameObject GetPrefab(string cardId, bool isGetVisual)
     {
-        foreach (var cardVisual in cardVisuals)
+        if (isGetVisual)
         {
-            if (cardVisual.cardId == cardId)
+            foreach (var cardVisual in cardPrefabs)
             {
-                return cardVisual.prefab;
+                if (cardVisual.cardId == cardId)
+                {
+                    return cardVisual.visualPrefab;
+                }
             }
-        }
 
-        Debug.LogError("Prefab for card ID " + cardId + " not found.");
-        return null;
+            Debug.LogError("Visual Prefab for card ID " + cardId + " not found.");
+            return null;
+        }
+        else
+        {
+            foreach (var cardPrefab in cardPrefabs)
+            {
+                if (cardPrefab.cardId == cardId)
+                {
+                    return cardPrefab.prefab;
+                }
+            }
+
+            Debug.LogError("Prefab for card ID " + cardId + " not found.");
+            return null;
+        }
     }
 
     public bool CheckIfCardsCanMerge(Card currentCard, Card otherCard)
     {
-        if (!currentCard.mergeable.Contains(otherCard.id))
-        {
-            Debug.LogError("Card with ID " + otherCard.id + " cannot be merged with card with ID " + currentCard.id);
-            return false;
-        }
-
         // Special ingredients can only be used once
         if (otherCard.mergedWith.Contains(currentCard.id))
         {
-            Debug.Log("This card has already been merged.");
+            //Debug.Log("This card has already been merged.");
+            return false;
+        }
+
+        if (currentCard.mergeable.Contains("U"))
+        {
+            return true;
+        }
+
+        if (!currentCard.mergeable.Contains(otherCard.id))
+        {
+            //Debug.LogError("Card with ID " + otherCard.id + " cannot be merged with card with ID " + currentCard.id);
             return false;
         }
 
@@ -81,8 +104,11 @@ public class CardManager : MonoBehaviour
             card.health += currentCard.health;
             card.range += currentCard.range;
             card.areaDamage |= currentCard.areaDamage;
+            card.attackCooldown = Mathf.Min(currentCard.attackCooldown, mergedWithCard.attackCooldown);
+            card.moveSpeed += currentCard.moveSpeed / 3;
 
             card.mergedWith.Add(currentCard.id);
+            card.mergeable.Remove(currentCard.id);
         }
         else
         {
@@ -93,8 +119,11 @@ public class CardManager : MonoBehaviour
             card.health += mergedWithCard.health;
             card.range += mergedWithCard.range;
             card.areaDamage |= mergedWithCard.areaDamage;
+            card.attackCooldown = Mathf.Min(currentCard.attackCooldown, mergedWithCard.attackCooldown);
+            card.moveSpeed += mergedWithCard.moveSpeed / 3;
 
             card.mergedWith.Add(mergedWithCard.id);
+            card.mergeable.Remove(mergedWithCard.id);
         }
 
         return card;
@@ -121,7 +150,7 @@ public class CardManager : MonoBehaviour
     {
         Card card = GetCardDetails(cardId);
 
-        GameObject prefab = GetPrefab(cardId);
+        GameObject prefab = GetPrefab(cardId, false);
 
         GameObject unitObject = Instantiate(prefab, spawnPosition, Quaternion.identity);//ImageTracker.ArenaInstance.transform
 
@@ -142,6 +171,7 @@ public class Card
     public int health;
     public int range;
     public float attackCooldown;
+    public float moveSpeed;
 
     public bool areaDamage;
     public int cost;
@@ -165,6 +195,7 @@ public class Card
             health = health,
             range = range,
             attackCooldown = attackCooldown,
+            moveSpeed = moveSpeed,
 
             areaDamage = areaDamage,
             cost = cost,
@@ -201,6 +232,7 @@ public class CardDatabase
                 health = 10,
                 range = 1,
                 attackCooldown = 1f,
+                moveSpeed = 2,
                 areaDamage = false,
                 cost = 20,
                 mergeable = new List<string>() {},
@@ -220,6 +252,7 @@ public class CardDatabase
                 health = 5,
                 range = 8,
                 attackCooldown = 1f,
+                moveSpeed = 1,
                 areaDamage = false,
                 cost = 20,
                 mergeable = new List<string>() {},
@@ -239,6 +272,7 @@ public class CardDatabase
                 health = 10,
                 range = 1,
                 attackCooldown = 1f,
+                moveSpeed = 2,
                 areaDamage = true,
                 cost = 30,
                 mergeable = new List<string>() {"B1"},
@@ -258,6 +292,7 @@ public class CardDatabase
                 health = 4,
                 range = 5,
                 attackCooldown = 1f,
+                moveSpeed = 2,
                 areaDamage = false,
                 cost = 30,
                 mergeable = new List<string>() {"B1",},
@@ -277,6 +312,7 @@ public class CardDatabase
                 health = 15,
                 range = 1,
                 attackCooldown = 1f,
+                moveSpeed = 1,
                 areaDamage = true,
                 cost = 25,
                 mergeable = new List<string>() { "B1", "B2" },
@@ -296,6 +332,7 @@ public class CardDatabase
                 health = 1,
                 range = 0,
                 attackCooldown = 1f,
+                moveSpeed = 3,
                 areaDamage = false,
                 cost = 10,
                 mergeable = new List<string>() {"U"},
@@ -315,6 +352,7 @@ public class CardDatabase
                 health = 5,
                 range = 1,
                 attackCooldown = 1f,
+                moveSpeed = 3,
                 areaDamage = true,
                 cost = 15,
                 mergeable = new List<string>() {"U"},
@@ -328,8 +366,9 @@ public class CardDatabase
 }
 
 [System.Serializable]
-public class CardVisual
+public class CardPrefab
 {
     public string cardId;
     public GameObject prefab;
+    public GameObject visualPrefab;
 }

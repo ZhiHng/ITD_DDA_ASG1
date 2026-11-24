@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 21 November 2026
+* Date: 24 November 2026
 * Description: Game Manager to store user data locally and manage game state
 */
 
@@ -41,14 +41,14 @@ public class GameManager : MonoBehaviour
     void OnSpawnAlly()
     {
         string cardId = cardIds[Random.Range(0, cardIds.Length)];
-        print("Spawning ally unit, cardId: " + cardId);
+        //print("Spawning ally unit, cardId: " + cardId);
         CardManager.instance.SpawnUnit(cardId, allySpawnPosition + Vector3.right * Random.Range(-0.175f, 0.175f) + Vector3.up * 0.01f, true);
     }
 
     void OnSpawnEnemy()
     {
         string cardId = cardIds[Random.Range(0, cardIds.Length)];
-        print("Spawning enemy unit, cardId: " + cardId);
+        //print("Spawning enemy unit, cardId: " + cardId);
         CardManager.instance.SpawnUnit(cardId, enemySpawnPosition + Vector3.right * Random.Range(-0.175f, 0.175f) + Vector3.up * 0.01f, false);
     }
 }

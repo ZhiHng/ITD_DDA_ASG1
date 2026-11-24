@@ -6502,21 +6502,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86ffdfff383f9c24d9e8f52df56824df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardManager
-  cardVisuals:
+  cardPrefabs:
   - cardId: B1
     prefab: {fileID: 6406596262741846159, guid: b6ae5168667a7914f82e906802c77c8b, type: 3}
+    visualPrefab: {fileID: 3525401122528556929, guid: cd0e8793cee90b64dac07bf918a16827, type: 3}
   - cardId: B2
     prefab: {fileID: 4310785035270948762, guid: 82d0f73163b73774dafde1eb4c74c56e, type: 3}
+    visualPrefab: {fileID: 6409351687027625712, guid: fe0995b078837284fa02842dc45c288e, type: 3}
   - cardId: I1
     prefab: {fileID: 326584715336610660, guid: 1895618424501f044a1c79cef32c5a53, type: 3}
+    visualPrefab: {fileID: 6486988693684012785, guid: e0764b87c15686149b1a69c86420ff1e, type: 3}
   - cardId: I2
     prefab: {fileID: 3306846919266177704, guid: 08093d4dd1f6a834aa02c699b03c0be5, type: 3}
+    visualPrefab: {fileID: 4794706599578037362, guid: 6c20f530b6dc717449d71670638a7980, type: 3}
   - cardId: I3
     prefab: {fileID: 3996128896332079974, guid: b47cb6175b401f046b31299ed4c85c83, type: 3}
+    visualPrefab: {fileID: 2986125290454901157, guid: c7390fe3b3b57fa45ab2cd3472d04d05, type: 3}
   - cardId: S1
     prefab: {fileID: 8228995337411851791, guid: 7572743336ae24f49b78149a0967b77d, type: 3}
+    visualPrefab: {fileID: 8517830789283695285, guid: cac82f07a4f6d4b4ea7147b9ec59ad98, type: 3}
   - cardId: S2
     prefab: {fileID: 2175146316059207614, guid: a66313ba3111f474797a770ab0aea8d8, type: 3}
+    visualPrefab: {fileID: 7137577431409978970, guid: 05d9b4221ffc2e149a9a8b755c21891f, type: 3}
 --- !u!1 &1323550131
 GameObject:
   m_ObjectHideFlags: 0
