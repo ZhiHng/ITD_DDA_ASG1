@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 24 November 2026
+* Date: 27 November 2026
 * Description: Script for the NPC units to move, interact, and run the game mechanics.
 */
 
@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 public class NPCUnits : MonoBehaviour
 {
+    public bool isBoss = false, isBase = false;
     public bool isAlly;
     public Card card;
 
@@ -19,6 +20,37 @@ public class NPCUnits : MonoBehaviour
         card = cardData;
         isAlly = ally;
         BuildVisualModel();
+    }
+    
+    public void InitializeBase(bool isAllyBase)
+    {
+        if (isAllyBase)
+        {
+            isBase = true;
+        }
+        else
+        {
+            isBoss = true;
+        }
+        card.health = 200;
+        card.moveSpeed = 0;
+        card.range = 0;
+        card.damage = 0;
+        GameObject arena = ImageTracker.ArenaInstance;
+        if (isAlly)
+        {
+            transform.position += -arena.transform.forward * 0.07f;
+        }
+        else
+        {
+            transform.position += arena.transform.forward * 0.07f;
+        }
+        
+        Transform model = visualRoot.GetChild(0);
+        model.localScale *= 3f;
+        transform.rotation = arena.transform.rotation;
+        GetComponent<BoxCollider>().size = new Vector3(0.35f, 0.01f, 0.01f);
+        healthBar.color = Color.orange;
     }
 
     GameObject targetEnemy;
@@ -82,19 +114,25 @@ public class NPCUnits : MonoBehaviour
         if (isAlly)
         {
             gameObject.tag = "Ally";
-            healthBar.color = Color.green;
-            moveDirection = transform.forward; //arena.transform.forward;
+            if (!isBase)
+            {
+                healthBar.color = Color.green;
+                moveDirection = ImageTracker.ArenaInstance.transform.forward;
+            }
         }
-        else
+        else if (!isAlly)
         {
             gameObject.tag = "Enemy";
-            healthBar.color = Color.red;
-            moveDirection = -transform.forward; //-arena.transform.forward;
+            if (!isBoss)
+            {
+                healthBar.color = Color.red;
+                moveDirection = -ImageTracker.ArenaInstance.transform.forward;
+            }
         }
     }
     void Update()
     {
-        if (isMerging)
+        if (isMerging || isBoss || isBase)
         {
             return;
         }
@@ -124,7 +162,7 @@ public class NPCUnits : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (targetEnemy == null)
+        if (targetEnemy == null && !(isBase || isBoss))
         {
             FindClosestEnemy();
         }
@@ -136,6 +174,10 @@ public class NPCUnits : MonoBehaviour
 
     void FindClosestEnemy()
     {
+        if (isBoss || isBase)
+        {
+            return;
+        }
         Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, aggroRange + card.range / 100f);
 
         float closestDistance = Mathf.Infinity;
@@ -243,6 +285,14 @@ public class NPCUnits : MonoBehaviour
         if (card.health <= 0)
         {
             Instantiate(deathEffect, transform.position, Quaternion.identity);
+            if (isBoss)
+            {
+                GameManager.instance.GameEnd(true);
+            }
+            if (isBase)
+            {
+                GameManager.instance.GameEnd(false);
+            }
             Destroy(gameObject);
         }
     }

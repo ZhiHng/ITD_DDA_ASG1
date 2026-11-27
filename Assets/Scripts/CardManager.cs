@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 24 November 2026
+* Date: 27 November 2026
 * Description: Data for the stats of the cards that will be scanned with AR
 */
 
@@ -146,17 +146,25 @@ public class CardManager : MonoBehaviour
         }
     }
 
-    public void SpawnUnit(string cardId, Vector3 spawnPosition, bool isAlly)
+    public void SpawnUnit(string cardId, Vector3 spawnPosition, bool isAlly, bool isBase = false, bool isBoss = false)
     {
         Card card = GetCardDetails(cardId);
 
         GameObject prefab = GetPrefab(cardId, false);
 
-        GameObject unitObject = Instantiate(prefab, spawnPosition, Quaternion.identity);//ImageTracker.ArenaInstance.transform
+        GameObject unitObject = Instantiate(prefab, spawnPosition, ImageTracker.ArenaInstance.transform.rotation, ImageTracker.ArenaInstance.transform);
 
         NPCUnits npc = unitObject.GetComponent<NPCUnits>();
 
         npc.Initialize(card, isAlly);
+        if (isBase)
+        {
+            npc.InitializeBase(true);
+        }
+        if (isBoss)
+        {
+            npc.InitializeBase(false);
+        }
     }
 }
 

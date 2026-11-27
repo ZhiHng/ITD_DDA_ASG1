@@ -1,59 +1,156 @@
 /*
 * Author: Zhi hng
-* Date: 8 November 2026
+* Date: 27 November 2026
 * Description: Script for image tracking
 */
 
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
 public class ImageTracker : MonoBehaviour
 {
-    [SerializeField]
-    private ARTrackedImageManager trackedImageManager;
+    [SerializeField] ARTrackedImageManager trackedImageManager;
 
-    [SerializeField]
-    private GameObject arenaPrefab;
+    [SerializeField] GameObject arenaPrefab;
+    [SerializeField] GameObject spawnMarker;
 
     public static GameObject ArenaInstance;
+    Collider deployZone;
+    HashSet<string> deployedCards = new();
+    bool arenaSpawned = false;
 
-    private bool arenaSpawned = false;
+    int level = 0;
 
-    private void OnEnable()
+    void OnEnable()
     {
         trackedImageManager.trackablesChanged.AddListener(OnImageChanged);
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         trackedImageManager.trackablesChanged.RemoveListener(OnImageChanged);
     }
 
-    private void OnImageChanged(ARTrackablesChangedEventArgs<ARTrackedImage> args)
+    void OnImageChanged(ARTrackablesChangedEventArgs<ARTrackedImage> args)
     {
-        foreach(var trackedImage in args.added)
+        foreach (ARTrackedImage image in args.added)
         {
-            TrySpawnArena(trackedImage);
+            HandleTrackedImage(image);
+        }
+
+        foreach (ARTrackedImage image in args.updated)
+        {
+            HandleTrackedImage(image);
         }
     }
 
-    private void TrySpawnArena(ARTrackedImage trackedImage)
+    void HandleTrackedImage(ARTrackedImage image)
     {
-        if(arenaSpawned)
+        string imageName = image.referenceImage.name;
+
+        // Arena Marker
+
+        if (imageName == "Arena" && !arenaSpawned)
+        {
+            if (image.trackingState == TrackingState.Tracking)
+            {
+                ArenaInstance = Instantiate(arenaPrefab, image.transform.position, image.transform.rotation);
+
+                arenaSpawned = true;
+                GameManager.instance.GameStart(level);
+                Debug.Log("Arena Spawned");
+            }
+            deployZone = ArenaInstance.transform.Find("AllySpawn").GetComponent<Collider>();
+
             return;
+        }
 
-        if(trackedImage.trackingState != TrackingState.Tracking)
+        if (image.trackingState != TrackingState.Tracking)
+        {
+            deployedCards.Remove(imageName);
             return;
+        }
 
-        ArenaInstance = Instantiate(
-            arenaPrefab,
-            trackedImage.transform.position,
-            trackedImage.transform.rotation
-        );
+        if (deployZone == null)
+        {
+            return;
+        }
 
-        arenaSpawned = true;
+        if (!deployedCards.Contains(imageName))
+        {
+            GameObject marker = Instantiate(spawnMarker, image.transform.position, Quaternion.identity); //delete when image moves
+            bool inDeployZone = deployZone.bounds.Contains(marker.transform.position);
 
-        Debug.Log("Arena spawned");
+            Destroy(marker);
+            if (inDeployZone)
+            {
+                SpawnCardUnit(imageName, image.transform.position);
+
+                deployedCards.Add(imageName);
+            }
+        }
+    }
+
+    void SpawnCardUnit(string imageName, Vector3 cardPosition)
+    {
+        Vector3 spawnPosition = new Vector3(cardPosition.x, deployZone.bounds.center.y, cardPosition.z);
+        switch (imageName)
+        {
+            case "B1":
+                CardManager.instance.SpawnUnit(
+                    "B1",
+                    spawnPosition,
+                    true
+                );
+                break;
+            case "B2":
+                CardManager.instance.SpawnUnit(
+                    "B2",
+                    spawnPosition,
+                    true
+                );
+                break;
+            case "I1":
+                CardManager.instance.SpawnUnit(
+                    "I1",
+                    spawnPosition,
+                    true
+                );
+                break;
+
+            case "I2":
+                CardManager.instance.SpawnUnit(
+                    "I2",
+                    spawnPosition,
+                    true
+                );
+                break;
+
+            case "I3":
+                CardManager.instance.SpawnUnit(
+                    "I3",
+                    spawnPosition,
+                    true
+                );
+                break;
+
+            case "S1":
+                CardManager.instance.SpawnUnit(
+                    "S1",
+                    spawnPosition,
+                    true
+                );
+                break;
+
+            case "S2":
+                CardManager.instance.SpawnUnit(
+                    "S2",
+                    spawnPosition,
+                    true
+                );
+                break;
+        }
     }
 }
