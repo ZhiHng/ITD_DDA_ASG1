@@ -10,6 +10,8 @@ TagManager:
   - EnemySpawn
   - AllyProjectile
   - EnemyProjectile
+  - SignInUpChange
+  - HomeMenuChange
   layers:
   - Default
   - TransparentFX

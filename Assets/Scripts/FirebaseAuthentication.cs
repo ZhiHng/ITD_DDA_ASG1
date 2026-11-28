@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 4 November 2026
+* Date: 28 November 2026
 * Description: Handles authentication then calls the database to read/write user data
 */
 
@@ -11,15 +11,10 @@ using TMPro;
 
 public class FirebaseAuthentication : MonoBehaviour
 {
-    Firebase.Auth.FirebaseAuth auth;
     public TMP_InputField emailInputField;
     public TMP_InputField passwordInputField;
     public TMP_InputField usernameInputField;
     [SerializeField] FirebaseGameDatabase gameDatabase;
-    void Awake()
-    {
-        auth = FirebaseAuth.DefaultInstance;
-    }
 
     public void SignUp()
     {
@@ -65,7 +60,6 @@ public class FirebaseAuthentication : MonoBehaviour
                 var uid = task.Result.User.UserId;
                 
                 Debug.Log("User ID: " + uid);
-                gameDatabase.currentUserId = uid;
                 gameDatabase.ReadUserData(uid);
             }
         });

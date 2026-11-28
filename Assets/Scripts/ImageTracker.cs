@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 27 November 2026
+* Date: 28 November 2026
 * Description: Script for image tracking
 */
 
@@ -14,12 +14,13 @@ public class ImageTracker : MonoBehaviour
     [SerializeField] ARTrackedImageManager trackedImageManager;
 
     [SerializeField] GameObject arenaPrefab;
-    [SerializeField] GameObject spawnMarker;
 
     public static GameObject ArenaInstance;
-    Collider deployZone;
+    BoxCollider deployZone;
     HashSet<string> deployedCards = new();
     bool arenaSpawned = false;
+    [Tooltip("0: Game Scene, 1: Info Scene")]
+    [SerializeField] int sceneType;
 
     int level = 0;
 
@@ -52,7 +53,7 @@ public class ImageTracker : MonoBehaviour
 
         // Arena Marker
 
-        if (imageName == "Arena" && !arenaSpawned)
+        if (sceneType == 0 && imageName == "Arena" && !arenaSpawned)
         {
             if (image.trackingState == TrackingState.Tracking)
             {
@@ -62,7 +63,7 @@ public class ImageTracker : MonoBehaviour
                 GameManager.instance.GameStart(level);
                 Debug.Log("Arena Spawned");
             }
-            deployZone = ArenaInstance.transform.Find("AllySpawn").GetComponent<Collider>();
+            deployZone = ArenaInstance.transform.Find("AllySpawn").GetComponent<BoxCollider>();
 
             return;
         }
@@ -73,22 +74,28 @@ public class ImageTracker : MonoBehaviour
             return;
         }
 
-        if (deployZone == null)
+        if (sceneType == 0 && deployZone == null)
         {
             return;
         }
 
         if (!deployedCards.Contains(imageName))
         {
-            GameObject marker = Instantiate(spawnMarker, image.transform.position, Quaternion.identity); //delete when image moves
-            bool inDeployZone = deployZone.bounds.Contains(marker.transform.position);
-
-            Destroy(marker);
-            if (inDeployZone)
+            if (sceneType == 0)
             {
-                SpawnCardUnit(imageName, image.transform.position);
+                Vector3 localPos = deployZone.transform.InverseTransformPoint(image.transform.position);
 
-                deployedCards.Add(imageName);
+                bool inDeployZone = Mathf.Abs(localPos.x) <= deployZone.size.x * 0.7f && Mathf.Abs(localPos.z) <= deployZone.size.z * 0.7f;
+                if (inDeployZone)
+                {
+                    SpawnCardUnit(imageName, image.transform.position);
+
+                    deployedCards.Add(imageName);
+                }
+            }
+            else if (sceneType == 1)
+            {
+                
             }
         }
     }

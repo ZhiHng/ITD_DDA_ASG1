@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 27 November 2026
+* Date: 28 November 2026
 * Description: Data for the stats of the cards that will be scanned with AR
 */
 
@@ -157,9 +157,12 @@ public class CardManager : MonoBehaviour
         NPCUnits npc = unitObject.GetComponent<NPCUnits>();
 
         npc.Initialize(card, isAlly);
+        GameManager.instance.spawnedUnits++;
+
         if (isBase)
         {
             npc.InitializeBase(true);
+            GameManager.instance.spawnedUnits--;
         }
         if (isBoss)
         {

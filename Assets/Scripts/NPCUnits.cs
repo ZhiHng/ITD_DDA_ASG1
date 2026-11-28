@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 27 November 2026
+* Date: 28 November 2026
 * Description: Script for the NPC units to move, interact, and run the game mechanics.
 */
 
@@ -61,8 +61,9 @@ public class NPCUnits : MonoBehaviour
     [SerializeField] Transform projectileSpawnPoint;
     [SerializeField] Transform visualRoot;
     [HideInInspector] public Vector3 moveDirection;
+    Collider unitCollider;
     bool isLoaded = true;
-    float aggroRange = 0.01f;
+    float aggroRange = 0.03f;
     float mergeRange = 0.03f;
     float mergeSpeed = 0.1f;
     [HideInInspector] public bool isMerging = false;
@@ -111,6 +112,7 @@ public class NPCUnits : MonoBehaviour
     {
         maxHealth = card.health;
         healthBar.fillAmount = 1f;
+        unitCollider = GetComponent<Collider>();
         if (isAlly)
         {
             gameObject.tag = "Ally";
@@ -138,7 +140,7 @@ public class NPCUnits : MonoBehaviour
         }
         if (targetEnemy != null)
         {
-            if (Vector3.Distance(transform.position, targetEnemy.transform.position) <= card.range / 100f) // convert range from cm to m
+            if (Vector3.Distance(transform.position, targetEnemy.transform.position) <= card.range / 100f || unitCollider.bounds.Intersects(targetEnemy.GetComponent<Collider>().bounds)) // convert range from cm to m
             {
                 if (isLoaded)
                     AttackEnemy();
@@ -316,6 +318,10 @@ public class NPCUnits : MonoBehaviour
         survivingUnit.isMerging = false;
         survivingUnit.BuildVisualModel();
         Instantiate(mergeEffect, targetLocation, Quaternion.identity);
+
+        if (isAlly)
+            GameManager.instance.merges++;
+            
         Destroy(unitToDestroy.gameObject);
     }
 }

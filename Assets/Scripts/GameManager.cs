@@ -1,6 +1,6 @@
 /*
 * Author: Zhi hng
-* Date: 27 November 2026
+* Date: 28 November 2026
 * Description: Game Manager to store user data locally and manage game state
 */
 
@@ -16,13 +16,17 @@ public class GameManager : MonoBehaviour
     public string username;
     public int level;
     public int experience;
+    public int gameLevel;
+    public int playingLevel;
+
 
     //Game state variables
     public int money;
     public int spawnedUnits;
+    public int merges;
+    float baseHealth;
     public int maxSpawnedUnits = 3;
-    Vector3 allySpawnPosition;
-    Vector3 enemySpawnPosition;
+    Transform enemySpawn;
     //string[] cardIds = { "B1", "B2", "I1", "I2", "I3", "S1", "S2"};
     [SerializeField] Animator countdownAnim;
     Dictionary<int, string[]> levelEnemies = new Dictionary<int, string[]>()
@@ -35,7 +39,7 @@ public class GameManager : MonoBehaviour
     };
     Coroutine spawnEnemyCoroutine;
 
-    void Start()
+    void Awake()
     {
         if (instance == null)
         {
@@ -49,24 +53,53 @@ public class GameManager : MonoBehaviour
         maxSpawnedUnits += level;
     }
 
-    // void OnSpawnAlly()
-    // {
-    //     string cardId = cardIds[Random.Range(0, cardIds.Length)];
-    //     CardManager.instance.SpawnUnit(cardId, allySpawnPosition + Vector3.right * Random.Range(-0.175f, 0.175f) + Vector3.up * 0.01f, true);
-    // }
-
-    // void OnSpawnEnemy()
-    // {
-    //     string cardId = cardIds[Random.Range(0, cardIds.Length)];
-    //     CardManager.instance.SpawnUnit(cardId, enemySpawnPosition + Vector3.right * Random.Range(-0.175f, 0.175f) + Vector3.up * 0.01f, false);
-    // }
-
     public void GameEnd(bool isWin)
     {
         StopCoroutine(spawnEnemyCoroutine);
+        FindFirstObjectByType<ImageTracker>().enabled = false;
+        NPCUnits[] npcScripts = FindObjectsByType<NPCUnits>(0);
+        foreach (NPCUnits script in npcScripts)
+        {
+            if (script.isBase)
+                baseHealth = script.card.health;
+            script.enabled = false;
+        }
+        int gainedExperience = 0;
+        if (isWin)
+        {
+            gainedExperience += 50 * (playingLevel + 1) + Mathf.Min(merges * (playingLevel + 1), 25 * (playingLevel + 1));
+            if (playingLevel == gameLevel)
+            {
+                gameLevel++;
+            }
+        }
+        gainedExperience += Mathf.Min(spawnedUnits * (playingLevel + 1), 10 * (playingLevel + 1));
+        experience += gainedExperience;
+        int levelUp = 0;
+        int levelsGained = 0;
+        while (experience >= GetRequiredXP(level))
+        {
+            experience -= GetRequiredXP(level);
+            level++;
+            levelUp = level;
+            levelsGained++;
+        }
+
+        string levelUpString = "";
+        if (levelUp != 0)
+        {
+            levelUpString = "Leveled Up! + " + levelsGained + "\nNew Level: " + levelUp;
+        }
+
+        string stats = "Remaining Base Health: " + baseHealth + "\nSpawned Units: " + spawnedUnits + "\nMerges: " + merges + "\nExperience Gained: " + gainedExperience + "\n" + levelUpString;
+        UIManager.instance.ShowGameEndScreen(true, isWin, playingLevel, stats);
+        UIManager.instance.UpdatePlayableLevels();
+        GetComponent<FirebaseGameDatabase>().UpdateDatabase(userId, level, experience, gameLevel);
     }
     public void GameStart(int level)
     {
+        playingLevel = level;
+        enemySpawn = ImageTracker.ArenaInstance.GetNamedChild("EnemySpawn").transform;
         CardManager.instance.SpawnUnit("B1", ImageTracker.ArenaInstance.transform.Find("AllySpawn").transform.position, true, true, false);
         switch (level)
         {
@@ -92,7 +125,7 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator SpawnEnemies(int level)
     {
-        Transform enemySpawn = ImageTracker.ArenaInstance.GetNamedChild("EnemySpawn").transform;
+        
         string[] spawnEnemies = levelEnemies[level];
         while (true)
         {  
@@ -108,6 +141,11 @@ public class GameManager : MonoBehaviour
     IEnumerator LevelCountdown()
     {
         yield return new WaitForSeconds(3);
-        spawnEnemyCoroutine = StartCoroutine(SpawnEnemies(level));
+        spawnEnemyCoroutine = StartCoroutine(SpawnEnemies(playingLevel));
+    }
+
+    public int GetRequiredXP(int level)
+    {
+        return 100 + (level * 50);
     }
 }

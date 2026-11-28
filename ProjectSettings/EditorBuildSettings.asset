@@ -6,7 +6,16 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/Account.unity
+    guid: 2afbf1d2213c1a94787618531be34ee8
+  - enabled: 1
+    path: Assets/Scenes/Home.unity
+    guid: 4608945a894dfd841a66a8cb893d97a3
+  - enabled: 1
+    path: Assets/Scenes/Info.unity
+    guid: e7e3dc149498b8b43b8ddc18586a2766
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
     guid: 4755b35b590504809a7525fd2109c2e2
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 6ee72d15cf39dd748a13eac57397b9af, type: 2}
